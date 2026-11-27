@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <title>1688 选品找货 &amp; 联系方式工作台</title>
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --green-bg: #dcfce7;
+      --green-text: #166534;
+      --amber-bg: #fef3c7;
+      --amber-text: #92400e;
+      --gray-bg: #f3f4f6;
+      --gray-text: #374151;
+      --blue-bg: #dbeafe;
+      --blue-text: #1e40af;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+    .container { max-width: 1480px; margin: 0 auto; padding: 24px; }
+    .header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 12px;
+    }
+    .header h1 { margin: 0; font-size: 20px; font-weight: 600; }
+    .header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .actions { display: flex; gap: 10px; }
+    .btn {
+      border: 1px solid var(--border); background: var(--card); color: var(--text);
+      padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px;
+      font-weight: 500; text-decoration: none;
+    }
+    .btn:hover { background: #f9fafb; }
+    .btn-sm { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-danger { background: #fff; border-color: #fca5a5; color: #b91c1c; }
+    .btn-danger:hover { background: #fef2f2; }
+    .tabs {
+      display: flex; gap: 8px; margin-bottom: 16px;
+      border-bottom: 1px solid var(--border); padding-bottom: 10px;
+    }
+    .tab-btn {
+      border: 1px solid transparent; background: transparent; padding: 8px 16px;
+      border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--muted);
+    }
+    .tab-btn.active {
+      background: var(--card); border-color: var(--border); color: var(--primary);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 16px;
+    }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px;
+    }
+    .stat-label { color: var(--muted); font-size: 12px; }
+    .stat-value { font-size: 22px; font-weight: 600; margin-top: 4px; }
+    .toolbar {
+      position: sticky; top: 8px; z-index: 30;
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 16px; margin-bottom: 16px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+      box-shadow: 0 2px 8px rgba(17, 24, 39, 0.06);
+    }
+    .progress-wrap {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: #f8fafc; border: 1px solid #dbeafe; border-radius: 8px;
+      padding: 5px 10px; font-size: 13px; color: var(--primary); font-weight: 500;
+    }
+    .progress-track {
+      width: 120px; height: 8px; background: #e2e8f0; border-radius: 999px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; width: 0%; background: var(--primary); border-radius: 999px; transition: width 0.25s ease;
+    }
+    .progress-fill.done { background: #16a34a; }
+    .match-progress-panel {
+      display: flex; flex-direction: column; gap: 6px; width: 100%;
+      background: #f8fafc; border: 1px solid #dbeafe; border-radius: 8px;
+      padding: 8px 12px; font-size: 13px; color: var(--text);
+    }
+    .progress-row {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .progress-label { width: 245px; flex-shrink: 0; color: var(--text); font-weight: 500; }
+    .progress-label strong { color: var(--primary); }
+    .progress-note { font-size: 12px; color: var(--muted); }
+    .toolbar input, .toolbar select {
+      border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 13px; outline: none;
+    }
+    .toolbar input { width: 280px; }
+    .table-wrap {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow-x: auto;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+    th, td {
+      padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle;
+    }
+    th {
+      background: #f9fafb; font-weight: 600; font-size: 12px; color: var(--muted); white-space: nowrap;
+    }
+    tr:hover td { background: #fafafa; }
+    .thumb {
+      width: 68px; height: 68px; object-fit: contain; border-radius: 6px;
+      border: 1px solid var(--border); background: #fff;
+    }
+    .title-cell {
+      max-width: 260px; display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4;
+    }
+    .link { color: var(--primary); text-decoration: none; font-size: 12px; }
+    .link:hover { text-decoration: underline; }
+    .link-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; align-items: center; }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 999px;
+      font-size: 12px; font-weight: 500; white-space: nowrap;
+    }
+    .badge-green { background: var(--green-bg); color: var(--green-text); }
+    .badge-amber { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-gray { background: var(--gray-bg); color: var(--gray-text); }
+    .badge-blue { background: var(--blue-bg); color: var(--blue-text); }
+    .phone-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 400; font-size: 13px; }
+    .inline-select, .inline-input {
+      border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; font-size: 13px; background: #fff;
+    }
+    .inline-input { width: 200px; }
+    .match-mini {
+      font-size: 12px; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; max-width: 260px;
+    }
+    .match-mini-item {
+      display: flex; justify-content: space-between; gap: 6px; align-items: center;
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 4px 8px;
+    }
+    .match-mini-item span {
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .hidden { display: none !important; }
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(17, 24, 39, 0.45);
+      display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+    }
+    .modal {
+      background: #fff; border-radius: 12px; max-width: 980px; width: 100%;
+      max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;
+    }
+    .modal-header {
+      padding: 14px 20px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-body {
+      padding: 16px 20px; overflow-y: auto;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px;
+    }
+    .extra-card {
+      border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: #fafafa;
+      display: flex; flex-direction: column; gap: 6px; font-size: 12px;
+    }
+    .extra-card img {
+      width: 100%; height: 150px; object-fit: contain; background: #fff; border-radius: 4px;
+    }
+    .toast {
+      position: fixed; right: 24px; bottom: 24px; background: #111827; color: #fff;
+      padding: 10px 16px; border-radius: 8px; font-size: 13px; opacity: 0;
+      transition: opacity 0.2s; pointer-events: none; z-index: 60;
+    }
+    .toast.show { opacity: 1; }
+    .asin-box {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fff;
+      padding-right: 6px;
+    }
+    .asin-box:focus-within {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+    }
+    .asin-box input {
+      border: none !important;
+      width: 210px !important;
+      padding: 7px 6px 7px 10px !important;
+      outline: none;
+      background: transparent;
+    }
+    .asin-icon-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #9ca3af;
+      padding: 2px 4px;
+      font-size: 14px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 4px;
+    }
+    .asin-icon-btn:hover { color: var(--text); background: #f3f4f6; }
+    .asin-popover {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      width: 280px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+      padding: 10px;
+      z-index: 40;
+    }
+    .asin-popover textarea {
+      width: 100%;
+      height: 130px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 13px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      resize: vertical;
+      outline: none;
+    }
+    .asin-popover textarea:focus { border-color: var(--primary); }
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      margin-top: 12px;
+      font-size: 13px;
+    }
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .pagination-bar select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 13px;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <h1>1688 选品找货 &amp; 卖家联系方式工作台</h1>
+        <p>本地主图存放在 <code>image/</code> 目录（相对路径加载），已串通 原始商品 → 1688 同款 → 卖家电话</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="akConfigBtn" onclick="openAkModal()">1688 AK 配置</button>
+        <button class="btn" id="browserLoginBtn" onclick="triggerBrowserLogin()">1688 扫码登录</button>
+        <button class="btn" onclick="loadAll()">刷新数据</button>
+        <a class="btn btn-primary" href="/api/export">导出联系方式 Excel</a>
+        <button class="btn btn-danger" onclick="shutdownServer()">停止服务</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tab-products" onclick="switchTab('products')">1. 原始商品库（含找同款结果）</button>
+      <button class="tab-btn" id="tab-matches" onclick="switchTab('matches')">2. 1688 同款与卖家联系方式</button>
+    </div>
+
+    <!-- Tab 1: Raw Products -->
+    <div id="view-products">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">入库 ASIN 总数</div>
+          <div class="stat-value" id="p-stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">已下载本地主图</div>
+          <div class="stat-value" id="p-stat-img" style="color:#166534">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">已匹配 1688 同款</div>
+          <div class="stat-value" id="p-stat-matched" style="color:#2563eb">0</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="asin-box" id="pAsinBox">
+          <input id="pAsinSearch" type="text" placeholder="按 ASIN 查询（逗号或点右侧多行）"
+            oninput="syncAsinFromSingle('p')" onfocus="openAsinPopover('p')" />
+          <button class="asin-icon-btn" title="清空" onclick="clearAsinSearch('p')">✕</button>
+          <button class="asin-icon-btn" title="多行批量输入" onclick="toggleAsinPopover('p')">≡</button>
+          <div class="asin-popover hidden" id="pAsinPopover">
+            <textarea id="pAsinTextarea" placeholder="每行一个 ASIN，可直接从 Excel 复制整列粘贴进来..."
+              oninput="syncAsinFromMulti('p')"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px;color:var(--muted);">
+              <span>自动按换行/逗号同步</span>
+              <button class="btn btn-sm" onclick="closeAllAsinPopovers()">确定</button>
+            </div>
+          </div>
+        </div>
+        <input id="pSearch" type="text" placeholder="其他条件：关键词 / 中文词 / 品牌 / 类目..." oninput="pPage=1;saveUiState();renderProducts()" />
+        <input id="importFileInput" type="file" accept=".xlsx,.xlsm,.csv" class="hidden" onchange="handleImportFile(this)" />
+        <button class="btn" id="importBtn" onclick="document.getElementById('importFileInput').click()">导入表格 (.xlsx/.csv)</button>
+        <button class="btn btn-primary" id="batchMatchBtn" onclick="runSelectedMatch()">获取同款商品 (<span id="selectedCount">0</span>)</button>
+        <button class="btn btn-danger" id="deleteProductsBtn" onclick="deleteSelectedProducts()">删除选中商品 (<span id="selectedDeleteCount">0</span>)</button>
+        <button class="btn" onclick="jumpSelectedToMatches()">去同款列表查看选中</button>
+        <div id="importProgressWrap" class="match-progress-panel hidden">
+          <div class="progress-row">
+            <span class="progress-label">下载商品主图，进度 <strong id="importDlText">0/0</strong></span>
+            <div class="progress-track" style="width:160px;flex-shrink:0;"><div id="importDlBar" class="progress-fill"></div></div>
+            <span id="importDlNote" class="progress-note"></span>
+            <button class="btn btn-sm btn-danger" style="margin-left:auto;" onclick="stopImportTask()">中断</button>
+          </div>
+          <div class="progress-row">
+            <span class="progress-label">翻译中文关键词，进度 <strong id="importTrText">0/0</strong></span>
+            <div class="progress-track" style="width:160px;flex-shrink:0;"><div id="importTrBar" class="progress-fill"></div></div>
+            <span id="importTrNote" class="progress-note"></span>
+          </div>
+        </div>
+        <div id="matchProgressWrap" class="match-progress-panel hidden">
+          <div class="progress-row">
+            <span class="progress-label">查询同款，进度 <strong id="matchStage1Text">0/0</strong></span>
+            <div class="progress-track" style="width:160px;flex-shrink:0;"><div id="matchStage1Bar" class="progress-fill"></div></div>
+            <span id="matchStage1Note" class="progress-note"></span>
+            <button class="btn btn-sm btn-danger" style="margin-left:auto;" onclick="stopMatchTask()">中断</button>
+          </div>
+          <div class="progress-row">
+            <span class="progress-label">查询详情，补充店铺信息 <strong id="matchStage2Text">0/0</strong></span>
+            <div class="progress-track" style="width:160px;flex-shrink:0;"><div id="matchStage2Bar" class="progress-fill"></div></div>
+            <span id="matchStage2Note" class="progress-note"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox" id="selectAllBox" onchange="toggleSelectAll(this.checked)" /></th>
+              <th>本地主图</th>
+              <th>ASIN &amp; 亚马逊链接</th>
+              <th>中英文关键词（可微调）</th>
+              <th>原产品名称 &amp; 品牌</th>
+              <th>售价 / 尺寸</th>
+              <th>类目 &amp; 排名</th>
+              <th>1688 找同款结果 &amp; 链接</th>
+            </tr>
+          </thead>
+          <tbody id="p-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="pPagination"></div>
+    </div>
+
+    <!-- Tab 2: 1688 Matched Offers -->
+    <div id="view-matches" class="hidden">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">1688 同款商品总数</div>
+          <div class="stat-value" id="m-stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">覆盖供应商（去重）</div>
+          <div class="stat-value" id="m-stat-shops" style="color:#166534">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">图搜命中</div>
+          <div class="stat-value" id="m-stat-img" style="color:#2563eb">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">已获取电话</div>
+          <div class="stat-value" id="m-stat-phone" style="color:#92400e">0</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="asin-box" id="mAsinBox">
+          <input id="mAsinSearch" type="text" placeholder="按 ASIN 查询（逗号或点右侧多行）"
+            oninput="syncAsinFromSingle('m')" onfocus="openAsinPopover('m')" />
+          <button class="asin-icon-btn" title="清空" onclick="clearAsinSearch('m')">✕</button>
+          <button class="asin-icon-btn" title="多行批量输入" onclick="toggleAsinPopover('m')">≡</button>
+          <div class="asin-popover hidden" id="mAsinPopover">
+            <textarea id="mAsinTextarea" placeholder="每行一个 ASIN，可直接从 Excel 复制整列粘贴进来..."
+              oninput="syncAsinFromMulti('m')"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:12px;color:var(--muted);">
+              <span>自动按换行/逗号同步</span>
+              <button class="btn btn-sm" onclick="closeAllAsinPopovers()">确定</button>
+            </div>
+          </div>
+        </div>
+        <input id="mSearch" type="text" placeholder="其他条件：中文词 / 1688标题 / 供应商 / 电话..." oninput="mPage=1;saveUiState();renderMatches()" />
+        <button class="btn" onclick="expandAllMatches()">全部展开</button>
+        <button class="btn" onclick="collapseAllMatches()">全部折叠</button>
+        <button class="btn btn-danger" id="deleteMatchesBtn" onclick="deleteSelectedMatches()">删除选中同款 (<span id="selectedMatchCount">0</span>)</button>
+        <button class="btn" onclick="stopContactFetch()">停止抓取</button>
+        <div id="contactProgressWrap" class="progress-wrap hidden">
+          <div class="progress-track"><div id="contactProgressBar" class="progress-fill"></div></div>
+          <span id="contactProgress">0/0</span>
+          <button class="btn btn-sm btn-danger" style="padding:2px 8px;" onclick="stopContactFetch()">中断</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:36px;"><input type="checkbox" id="selectAllMatchesBox" onchange="toggleSelectAllMatches(this.checked)" /></th>
+              <th style="width:40px;"></th>
+              <th>主图</th>
+              <th>ASIN &amp; 中文词</th>
+              <th>原产品名称 &amp; 类目</th>
+              <th>1688 匹配情况</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="m-tbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="mPagination"></div>
+    </div>
+  </div>
+
+  <!-- Shared Modal for Extra Images / Matched 1688 Offers -->
+  <div id="imgModal" class="modal-backdrop hidden" onclick="if (event.target === this) closeModal()">
+    <div class="modal">
+      <div class="modal-header">
+        <strong id="modalTitle">详情</strong>
+        <button class="btn btn-sm" onclick="closeModal()">关闭</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+  <!-- Match Parameters Modal -->
+  <div id="rerunModal" class="modal-backdrop hidden" onclick="if (event.target === this) closeRerunModal()">
+    <div class="modal" style="max-width:560px;">
+      <div class="modal-header">
+        <strong>1688 获取同款商品参数设置</strong>
+        <button class="btn btn-sm" onclick="closeRerunModal()">关闭</button>
+      </div>
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;max-height:75vh;">
+        <div style="font-size:13px;color:var(--muted);" id="rerunTargetInfo"></div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;">
+          查询数量（按供应商去重）
+          <select id="rerunLimit" class="inline-select" style="width:100%;">
+            <option value="5">5 家不同店铺</option>
+            <option value="10" selected>10 家不同店铺（默认）</option>
+            <option value="15">15 家不同店铺</option>
+            <option value="20">20 家不同店铺</option>
+            <option value="30">30 家不同店铺</option>
+          </select>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;">
+          搜索方式
+          <select id="rerunMode" class="inline-select" style="width:100%;" onchange="onRerunModeChange()">
+            <option value="auto">自动（先按图搜+校验，不准自动转关键词）</option>
+            <option value="image">按图搜（强制使用所选图片）</option>
+            <option value="text">按关键字搜（强制使用下方关键词）</option>
+          </select>
+        </label>
+        <div id="rerunImagesWrap" style="display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <label style="font-size:13px;font-weight:500;">选择图搜图片（可多选，依次以图搜图并合并去重）</label>
+            <span style="font-size:12px;color:var(--muted);" id="rerunImagesHint">第 1 张默认主图</span>
+          </div>
+          <div id="rerunImagesList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:8px;max-height:220px;overflow-y:auto;padding:2px;"></div>
+        </div>
+        <div id="rerunQueryWrap" style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:13px;font-weight:500;">手动搜索关键词（留空则使用各自库内中文关键词）</label>
+          <input id="rerunQuery" class="inline-input" style="width:100%;" type="text" placeholder="例如：拱形全身镜 铝合金 / 蝴蝶椅..." />
+          <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;">
+            <input id="rerunSaveQuery" type="checkbox" checked />
+            同时将此关键词保存回商品库
+          </label>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:4px;">
+          <button class="btn" onclick="closeRerunModal()">取消</button>
+          <button class="btn btn-primary" onclick="confirmRerun()">确认开始</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AK & Settings Modal -->
+  <div id="akModal" class="modal-backdrop hidden" onclick="if (event.target === this) closeAkModal()">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-header">
+        <strong>1688 AK 授权与本地配置</strong>
+        <button class="btn btn-sm" onclick="closeAkModal()">关闭</button>
+      </div>
+      <div style="padding:18px 20px;display:flex;flex-direction:column;gap:14px;">
+        <div id="akStatusBanner" style="font-size:13px;padding:10px 12px;border-radius:8px;background:#f8fafc;border:1px solid var(--border);color:var(--text);">
+          正在读取当前配置...
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="akBrowserAuthBtn" onclick="startBrowserAkAuth()">一键浏览器授权获取 AK</button>
+          <span style="font-size:12px;color:var(--muted);">会打开 1688 官方授权页，登录确认后自动回填保存</span>
+        </div>
+        <div id="akAuthStatusText" class="hidden" style="font-size:12px;color:var(--primary);"></div>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;">
+          手动粘贴 1688 AK（可选，留空表示不修改当前 AK）
+          <input id="akManualInput" class="inline-input" style="width:100%;" type="password" placeholder="粘贴你的 1688 AK 字符串..." autocomplete="off" />
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;">
+          默认旺旺开场话术
+          <input id="akGreetingInput" class="inline-input" style="width:100%;" type="text" placeholder="老板你好，想长期拿货，方便留个电话直接沟通吗" />
+        </label>
+        <div style="display:flex;justify-content:flex-end;gap:10px;">
+          <button class="btn" onclick="closeAkModal()">取消</button>
+          <button class="btn btn-primary" onclick="saveAkConfig()">保存配置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已保存</div>
+
+  <script>
+    let productRows = [];
+    let matchRows = [];
+    let selectedAsins = new Set();
+    let selectedMatchAsins = new Set();
+    let expandedAsins = new Set();
+    let pendingRerunAsins = [];
+    let matchPollTimer = null;
+    let importPollTimer = null;
+    let contactPollTimer = null;
+    let activeTab = "products";
+    let pPage = 1;
+    let pPageSize = 20;
+    let mPage = 1;
+    let mPageSize = 20;
+    let configuredGreeting = "老板你好，想长期拿货，方便留个电话直接沟通吗";
+    let akPollTimer = null;
+    let loginPollTimer = null;
+    const UI_STATE_KEY = "sourcing_ui_state_v1";
+
+    function saveUiState() {
+      try {
+        const state = {
+          activeTab,
+          pAsinSearch: document.getElementById("pAsinSearch").value,
+          pSearch: document.getElementById("pSearch").value,
+          mAsinSearch: document.getElementById("mAsinSearch").value,
+          mSearch: document.getElementById("mSearch").value,
+          expandedAsins: Array.from(expandedAsins),
+          pPage,
+          pPageSize,
+          mPage,
+          mPageSize,
+        };
+        localStorage.setItem(UI_STATE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function restoreUiState() {
+      try {
+        const raw = localStorage.getItem(UI_STATE_KEY);
+        if (raw) {
+          const st = JSON.parse(raw);
+          if (st.activeTab === "products" || st.activeTab === "matches") activeTab = st.activeTab;
+          if (typeof st.pAsinSearch === "string") {
+            document.getElementById("pAsinSearch").value = st.pAsinSearch;
+            document.getElementById("pAsinTextarea").value = parseAsinList(st.pAsinSearch).join("\n");
+          }
+          if (typeof st.pSearch === "string") document.getElementById("pSearch").value = st.pSearch;
+          if (typeof st.mAsinSearch === "string") {
+            document.getElementById("mAsinSearch").value = st.mAsinSearch;
+            document.getElementById("mAsinTextarea").value = parseAsinList(st.mAsinSearch).join("\n");
+          }
+          if (typeof st.mSearch === "string") document.getElementById("mSearch").value = st.mSearch;
+          expandedAsins = new Set();
+          if (Number(st.pPage) >= 1) pPage = Number(st.pPage);
+          if ([20, 50, 100, 200].includes(Number(st.pPageSize))) pPageSize = Number(st.pPageSize);
+          if (Number(st.mPage) >= 1) mPage = Number(st.mPage);
+          if ([20, 50, 100, 200].includes(Number(st.mPageSize))) mPageSize = Number(st.mPageSize);
+        }
+      } catch (e) {}
+      if (window.location.hash === "#matches") activeTab = "matches";
+      else if (window.location.hash === "#products") activeTab = "products";
+      applyTabDom(activeTab);
+    }
+
+    function parseAsinList(raw) {
+      return String(raw || "")
+        .split(/[\s,，;；\n]+/)
+        .map(s => s.trim().toUpperCase())
+        .filter(Boolean);
+    }
+
+    function openAsinPopover(prefix) {
+      closeAllAsinPopovers();
+      document.getElementById(`${prefix}AsinPopover`).classList.remove("hidden");
+    }
+
+    function toggleAsinPopover(prefix) {
+      const pop = document.getElementById(`${prefix}AsinPopover`);
+      const wasHidden = pop.classList.contains("hidden");
+      closeAllAsinPopovers();
+      if (wasHidden) {
+        pop.classList.remove("hidden");
+        document.getElementById(`${prefix}AsinTextarea`).focus();
+      }
+    }
+
+    function closeAllAsinPopovers() {
+      document.getElementById("pAsinPopover").classList.add("hidden");
+      document.getElementById("mAsinPopover").classList.add("hidden");
+    }
+
+    function syncAsinFromSingle(prefix) {
+      const val = document.getElementById(`${prefix}AsinSearch`).value;
+      const list = parseAsinList(val);
+      document.getElementById(`${prefix}AsinTextarea`).value = list.join("\n");
+      if (prefix === "p") {
+        pPage = 1;
+        saveUiState();
+        renderProducts();
+      } else {
+        mPage = 1;
+        saveUiState();
+        renderMatches();
+      }
+    }
+
+    function syncAsinFromMulti(prefix) {
+      const val = document.getElementById(`${prefix}AsinTextarea`).value;
+      const list = parseAsinList(val);
+      document.getElementById(`${prefix}AsinSearch`).value = list.join(",");
+      if (prefix === "p") {
+        pPage = 1;
+        saveUiState();
+        renderProducts();
+      } else {
+        mPage = 1;
+        saveUiState();
+        renderMatches();
+      }
+    }
+
+    function clearAsinSearch(prefix) {
+      document.getElementById(`${prefix}AsinSearch`).value = "";
+      document.getElementById(`${prefix}AsinTextarea`).value = "";
+      if (prefix === "p") {
+        pPage = 1;
+        saveUiState();
+        renderProducts();
+      } else {
+        mPage = 1;
+        saveUiState();
+        renderMatches();
+      }
+    }
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#pAsinBox") && !e.target.closest("#mAsinBox")) {
+        closeAllAsinPopovers();
+      }
+    });
+
+    function jumpToMatches(asins) {
+      if (!asins || asins.length === 0) {
+        showToast("请先选择或指定 ASIN");
+        return;
+      }
+      document.getElementById("mAsinSearch").value = asins.join(",");
+      document.getElementById("mAsinTextarea").value = asins.join("\n");
+      document.getElementById("mSearch").value = "";
+      mPage = 1;
+      expandedAsins.clear();
+      switchTab("matches", true);
+      renderMatches();
+    }
+
+    function getOrderedSelectedAsins() {
+      return productRows.filter(r => selectedAsins.has(r.asin)).map(r => r.asin);
+    }
+
+    function getOrderedSelectedMatchAsins() {
+      return getMatchGroups().filter(g => selectedMatchAsins.has(g.asin)).map(g => g.asin);
+    }
+
+    function jumpSelectedToMatches() {
+      jumpToMatches(getOrderedSelectedAsins());
+    }
+
+    function toggleExpand(asin) {
+      if (expandedAsins.has(asin)) expandedAsins.delete(asin);
+      else expandedAsins.add(asin);
+      saveUiState();
+      renderMatches();
+    }
+
+    function expandAllMatches() {
+      getMatchGroups().forEach(r => {
+        if ((r.matched_offers || []).length > 0) expandedAsins.add(r.asin);
+      });
+      saveUiState();
+      renderMatches();
+    }
+
+    function collapseAllMatches() {
+      expandedAsins.clear();
+      saveUiState();
+      renderMatches();
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 1800);
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function applyTabDom(tab) {
+      ["products", "matches"].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle("active", tab === t);
+        document.getElementById(`view-${t}`).classList.toggle("hidden", tab !== t);
+      });
+    }
+
+    function switchTab(tab, skipCarry = false) {
+      activeTab = tab;
+      if (tab === "matches" && !skipCarry) {
+        // Carry over selected ASINs or Page-1 ASIN filter when switching directly to Tab 2
+        const selectedList = getOrderedSelectedAsins();
+        const pAsins = parseAsinList(document.getElementById("pAsinSearch").value);
+        const carryList = selectedList.length > 0 ? selectedList : pAsins;
+        if (carryList.length > 0) {
+          document.getElementById("mAsinSearch").value = carryList.join(",");
+          document.getElementById("mAsinTextarea").value = carryList.join("\n");
+          mPage = 1;
+        }
+        expandedAsins.clear();
+      }
+      applyTabDom(tab);
+      window.history.replaceState(null, "", `#${tab}`);
+      saveUiState();
+      if (tab === "matches") renderMatches();
+      else renderProducts();
+    }
+
+    function renderPaginationBar(containerId, totalItems, currentPage, pageSize, pageVarName) {
+      const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+      const safePage = Math.min(Math.max(1, currentPage), totalPages);
+      const prefix = pageVarName === "p" ? "p" : "m";
+      document.getElementById(containerId).innerHTML = `
+        <div style="color:var(--muted);">共 <strong>${totalItems}</strong> 个 ASIN · 第 <strong>${safePage}</strong> / ${totalPages} 页</div>
+        <div class="pagination-controls">
+          <label style="color:var(--muted);">
+            每页：
+            <select onchange="changePageSize('${prefix}', Number(this.value))">
+              ${[20, 50, 100, 200].map(sz => `<option value="${sz}" ${pageSize === sz ? "selected" : ""}>${sz} 条</option>`).join("")}
+            </select>
+          </label>
+          <button class="btn btn-sm" ${safePage <= 1 ? "disabled" : ""} onclick="goToPage('${prefix}', 1)">首页</button>
+          <button class="btn btn-sm" ${safePage <= 1 ? "disabled" : ""} onclick="goToPage('${prefix}', ${safePage - 1})">上一页</button>
+          <button class="btn btn-sm" ${safePage >= totalPages ? "disabled" : ""} onclick="goToPage('${prefix}', ${safePage + 1})">下一页</button>
+          <button class="btn btn-sm" ${safePage >= totalPages ? "disabled" : ""} onclick="goToPage('${prefix}', ${totalPages})">末页</button>
+        </div>
+      `;
+      return safePage;
+    }
+
+    function goToPage(prefix, page) {
+      if (prefix === "p") {
+        pPage = page;
+        saveUiState();
+        renderProducts();
+      } else {
+        mPage = page;
+        saveUiState();
+        renderMatches();
+      }
+    }
+
+    function changePageSize(prefix, size) {
+      if (prefix === "p") {
+        pPageSize = size;
+        pPage = 1;
+        saveUiState();
+        renderProducts();
+      } else {
+        mPageSize = size;
+        mPage = 1;
+        saveUiState();
+        renderMatches();
+      }
+    }
+
+    async function loadAll() {
+      const [pRes, mRes] = await Promise.all([
+        fetch("/api/products"),
+        fetch("/api/matches")
+      ]);
+      productRows = (await pRes.json()).rows || [];
+      matchRows = (await mRes.json()).rows || [];
+      renderProducts();
+      renderMatches();
+    }
+
+    async function updateProduct(asin, payload) {
+      const res = await fetch("/api/products/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ asin, ...payload })
+      });
+      if (res.ok) {
+        const idx = productRows.findIndex(r => r.asin === asin);
+        if (idx !== -1) Object.assign(productRows[idx], payload);
+        showToast("商品信息已保存");
+      } else {
+        showToast("保存失败");
+      }
+    }
+
+    async function updateContact(offerId, payload) {
+      const res = await fetch("/api/contacts/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offer_id: offerId, ...payload })
+      });
+      if (res.ok) {
+        await loadAll();
+        showToast("已保存到数据库");
+      } else {
+        showToast("保存失败");
+      }
+    }
+
+    function renderContactProgress(st) {
+      const wrap = document.getElementById("contactProgressWrap");
+      const bar = document.getElementById("contactProgressBar");
+      const txt = document.getElementById("contactProgress");
+      const total = Number(st.total || 0);
+      const done = Number(st.done || 0);
+      if (!st.running) {
+        wrap.classList.add("hidden");
+        return;
+      }
+      if (total > 0) {
+        wrap.classList.remove("hidden");
+        const pct = Math.min(100, Math.round((done / total) * 100));
+        bar.style.width = `${pct}%`;
+        txt.textContent = `${done}/${total}`;
+      } else if (st.message) {
+        wrap.classList.remove("hidden");
+        bar.style.width = "0%";
+        txt.textContent = st.message;
+      } else {
+        wrap.classList.add("hidden");
+      }
+    }
+
+    function startContactPolling() {
+      if (contactPollTimer) clearInterval(contactPollTimer);
+      let lastDone = -1;
+      contactPollTimer = setInterval(async () => {
+        const sRes = await fetch("/api/contact-status");
+        const st = await sRes.json();
+        renderContactProgress(st);
+        if (typeof st.done === "number" && st.done !== lastDone) {
+          lastDone = st.done;
+          await loadAll();
+        }
+        if (!st.running) {
+          clearInterval(contactPollTimer);
+          contactPollTimer = null;
+          await loadAll();
+          showToast(st.message || "联系方式抓取完成");
+        }
+      }, 1500);
+    }
+
+    async function fetchContacts(items, mode = "factory") {
+      if (!items || items.length === 0) {
+        showToast("没有可抓取的 1688 链接");
+        return;
+      }
+      renderContactProgress({ running: true, done: 0, total: items.length });
+      const res = await fetch("/api/contacts/fetch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items, mode })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "启动失败");
+        document.getElementById("contactProgressWrap").classList.add("hidden");
+        return;
+      }
+      startContactPolling();
+    }
+
+    function fetchAsinContacts(asin, mode = "factory") {
+      const items = matchRows
+        .filter(m => m.asin === asin && m.detail_url)
+        .map(m => ({
+          offer_url: m.detail_url,
+          supplier: m.supplier || "",
+          factory_url: m.supplier_factory_url || m.factory_url || ""
+        }));
+      fetchContacts(items, mode);
+    }
+
+    function fetchSingleContact(url, supplier = "", factoryUrl = "", mode = "factory") {
+      fetchContacts([{ offer_url: url, supplier, factory_url: factoryUrl }], mode);
+    }
+
+    async function startWangWangChat(offerUrl) {
+      const greeting = configuredGreeting || "老板你好，想长期拿货，方便留个电话直接沟通吗";
+      renderContactProgress({ running: false, total: 0, done: 0, message: "正在打开旺旺聊天 Tab 并填入话术..." });
+      const res = await fetch("/api/contacts/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offer_url: offerUrl, greeting })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "启动失败");
+        renderContactProgress({ running: false, total: 0, done: 0, message: "" });
+        return;
+      }
+      renderContactProgress({
+        running: false,
+        total: 0,
+        done: 0,
+        message: data.queued
+          ? "已追加新的旺旺聊天 Tab（可继续点其他供应商）"
+          : "旺旺聊天窗口已打开（可继续点其他供应商在同一窗口开新 Tab）"
+      });
+      showToast(data.queued ? "已追加新的聊天 Tab 并填入话术" : "已打开旺旺聊天 Tab 并填入话术");
+    }
+
+    async function stopContactFetch() {
+      await fetch("/api/contacts/stop", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      if (contactPollTimer) {
+        clearInterval(contactPollTimer);
+        contactPollTimer = null;
+      }
+      renderContactProgress({ running: false, total: 0, done: 0, message: "" });
+      await loadAll();
+      showToast("已中断电话抓取任务");
+    }
+
+    async function stopImportTask() {
+      await fetch("/api/products/import/stop", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      if (importPollTimer) {
+        clearInterval(importPollTimer);
+        importPollTimer = null;
+      }
+      const btn = document.getElementById("importBtn");
+      btn.disabled = false;
+      btn.textContent = "导入表格 (.xlsx/.csv)";
+      renderImportProgress({ running: false });
+      await loadAll();
+      showToast("已中断导入任务");
+    }
+
+    async function stopMatchTask() {
+      await fetch("/api/products/match/stop", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      if (matchPollTimer) {
+        clearInterval(matchPollTimer);
+        matchPollTimer = null;
+      }
+      document.getElementById("batchMatchBtn").disabled = false;
+      renderMatchProgress({ running: false });
+      await loadAll();
+      showToast("已中断查询同款任务");
+    }
+
+    function openExtraImages(asin) {
+      const row = productRows.find(r => r.asin === asin);
+      if (!row) return;
+      document.getElementById("modalTitle").textContent = `${asin} — 亚马逊全部图片链接`;
+      const cards = [];
+      if (row.image_url) {
+        cards.push(`
+          <div class="extra-card">
+            <img src="${escapeHtml(row.image_url)}" alt="主图" />
+            <div><strong>主图</strong></div>
+            <a class="link" href="${escapeHtml(row.image_url)}" target="_blank">打开原图链接 ↗</a>
+          </div>
+        `);
+      }
+      (row.extra_images || []).forEach(img => {
+        cards.push(`
+          <div class="extra-card">
+            <img src="${escapeHtml(img.image_url)}" alt="附图 ${img.seq}" loading="lazy" />
+            <div><strong>附图 #${img.seq}</strong></div>
+            <a class="link" href="${escapeHtml(img.image_url)}" target="_blank">打开原图链接 ↗</a>
+          </div>
+        `);
+      });
+      document.getElementById("modalBody").innerHTML = cards.join("");
+      document.getElementById("imgModal").classList.remove("hidden");
+    }
+
+    function formatPhoneLines(r) {
+      const lines = [];
+      if (r.virtual_phone) {
+        const exp = r.virtual_expires_at ? `，截止 ${escapeHtml(r.virtual_expires_at)}` : "";
+        lines.push(`<div><span class="phone-text">${escapeHtml(r.virtual_phone)}</span> <span class="badge badge-amber">虚拟号${exp}</span></div>`);
+      }
+      if (r.real_phone) {
+        lines.push(`<div><span class="phone-text">${escapeHtml(r.real_phone)}</span> <span class="badge badge-green">实号</span></div>`);
+      }
+      if (lines.length === 0 && r.phone) {
+        const isVirtual = (r.contact_note || "").includes("虚拟号");
+        lines.push(`<div><span class="phone-text">${escapeHtml(r.phone)}</span> <span class="badge ${isVirtual ? "badge-amber" : "badge-green"}">${isVirtual ? "虚拟号" : "实号"}</span></div>`);
+      }
+      return lines;
+    }
+
+    function openMatchedOffers(asin) {
+      const row = productRows.find(r => r.asin === asin);
+      if (!row) return;
+      document.getElementById("modalTitle").textContent = `${asin} (${row.keyword_zh || ""}) — 1688 同款匹配结果`;
+      const offers = row.matched_offers || [];
+      document.getElementById("modalBody").innerHTML = offers.map(m => {
+        const lines = formatPhoneLines(m);
+        const phoneHtml = lines.length > 0
+          ? `<div style="background:#f8fafc;border:1px solid #e2e8f0;padding:6px 8px;border-radius:6px;display:flex;flex-direction:column;gap:4px;">
+               ${lines.join("")}
+               ${m.contact_person ? `<div style="color:var(--muted);font-size:12px;">联系人：${escapeHtml(m.contact_person)}</div>` : ""}
+             </div>`
+          : `<div style="color:var(--muted);">电话：${escapeHtml(m.contact_status || "暂未获取")}</div>`;
+        return `
+          <div class="extra-card">
+            ${m.image_url ? `<img src="${escapeHtml(m.image_url)}" alt="1688图" loading="lazy" referrerpolicy="no-referrer" />` : ""}
+            <div style="font-weight:600;line-height:1.35;">${escapeHtml(m.title)}</div>
+            <div style="color:#b91c1c;font-weight:600;">¥${escapeHtml(m.price ?? "-")} <span style="color:var(--muted);font-weight:400;">(${escapeHtml(m.quantity_begin ?? 1)}件起批)</span></div>
+            <div>供应商：${escapeHtml(m.supplier || "-")}</div>
+            ${phoneHtml}
+            <div style="color:var(--muted);">销量: ${escapeHtml(m.sold_count ?? 0)}</div>
+            <a class="link" href="${escapeHtml(m.detail_url)}" target="_blank">打开 1688 详情页 ↗</a>
+          </div>
+        `;
+      }).join("");
+      document.getElementById("imgModal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+      document.getElementById("imgModal").classList.add("hidden");
+    }
+
+    function updateSelectedCount() {
+      document.getElementById("selectedCount").textContent = selectedAsins.size;
+      const delEl = document.getElementById("selectedDeleteCount");
+      if (delEl) delEl.textContent = selectedAsins.size;
+    }
+
+    function updateSelectedMatchCount() {
+      const el = document.getElementById("selectedMatchCount");
+      if (el) el.textContent = selectedMatchAsins.size;
+    }
+
+    function toggleSelect(asin, checked) {
+      if (checked) selectedAsins.add(asin);
+      else selectedAsins.delete(asin);
+      updateSelectedCount();
+    }
+
+    function toggleSelectAll(checked) {
+      const asinFilterList = parseAsinList(document.getElementById("pAsinSearch").value);
+      const kw = document.getElementById("pSearch").value.trim().toLowerCase();
+      productRows.forEach(r => {
+        if (asinFilterList.length > 0 && !asinFilterList.some(a => r.asin.toUpperCase().includes(a))) return;
+        const hay = `${r.clean_keyword} ${r.keyword_zh} ${r.title} ${r.brand} ${r.category_large} ${r.category_small}`.toLowerCase();
+        if (!kw || hay.includes(kw)) {
+          if (checked) selectedAsins.add(r.asin);
+          else selectedAsins.delete(r.asin);
+        }
+      });
+      updateSelectedCount();
+      renderProducts();
+    }
+
+    function getMatchGroups() {
+      const productByAsin = new Map(productRows.map(p => [p.asin, p]));
+      const grouped = new Map();
+      matchRows.forEach(m => {
+        const asin = m.asin;
+        if (!grouped.has(asin)) {
+          const p = productByAsin.get(asin);
+          grouped.set(asin, {
+            asin,
+            id: (p && p.id) || m.amazon_id || "",
+            keyword_zh: (p && p.keyword_zh) || m.keyword_zh || "",
+            clean_keyword: (p && p.clean_keyword) || m.amazon_clean_keyword || "",
+            title: (p && p.title) || m.amazon_title || "(原始商品已删除，重新导入相同 ASIN 可自动关联)",
+            brand: (p && p.brand) || "",
+            category_small: (p && p.category_small) || m.amazon_category_small || "-",
+            local_image_path: (p && p.local_image_path) || m.amazon_local_image || "",
+            image_url: (p && p.image_url) || m.amazon_image_url || "",
+            matched_offers: [],
+          });
+        }
+        grouped.get(asin).matched_offers.push(m);
+      });
+      return Array.from(grouped.values());
+    }
+
+    function toggleSelectMatch(asin, checked) {
+      if (checked) selectedMatchAsins.add(asin);
+      else selectedMatchAsins.delete(asin);
+      updateSelectedMatchCount();
+    }
+
+    function toggleSelectAllMatches(checked) {
+      const asinFilterList = parseAsinList(document.getElementById("mAsinSearch").value);
+      const kw = document.getElementById("mSearch").value.trim().toLowerCase();
+      getMatchGroups().forEach(p => {
+        if (asinFilterList.length > 0 && !asinFilterList.some(a => p.asin.toUpperCase().includes(a))) return;
+        const offers = p.matched_offers || [];
+        const parentMatch = `${p.keyword_zh} ${p.clean_keyword} ${p.title} ${p.brand}`.toLowerCase().includes(kw);
+        const childMatch = offers.some(m => `${m.title} ${m.supplier} ${m.search_method} ${m.phone || ""} ${m.contact_person || ""}`.toLowerCase().includes(kw));
+        if (!kw || parentMatch || childMatch) {
+          if (checked) selectedMatchAsins.add(p.asin);
+          else selectedMatchAsins.delete(p.asin);
+        }
+      });
+      updateSelectedMatchCount();
+      renderMatches();
+    }
+
+    function renderImportProgress(st) {
+      const wrap = document.getElementById("importProgressWrap");
+      const dlBar = document.getElementById("importDlBar");
+      const dlTxt = document.getElementById("importDlText");
+      const dlNote = document.getElementById("importDlNote");
+      const trBar = document.getElementById("importTrBar");
+      const trTxt = document.getElementById("importTrText");
+      const trNote = document.getElementById("importTrNote");
+      if (!st || !st.running) {
+        wrap.classList.add("hidden");
+        return;
+      }
+      wrap.classList.remove("hidden");
+
+      const dlTotal = Number(st.dl_total || 0);
+      const dlDone = Number(st.dl_done || 0);
+      const dlPct = dlTotal > 0 ? Math.min(100, Math.round((dlDone / dlTotal) * 100)) : 0;
+      dlBar.style.width = `${dlPct}%`;
+      dlBar.classList.toggle("done", dlTotal > 0 && dlDone >= dlTotal);
+      dlTxt.textContent = dlTotal > 0 ? `${dlDone}/${dlTotal}` : "0/0";
+      dlNote.textContent = st.dl_note || (dlTotal > 0 && dlDone >= dlTotal ? "已完成" : "");
+
+      const trTotal = Number(st.tr_total || 0);
+      const trDone = Number(st.tr_done || 0);
+      const trPct = trTotal > 0 ? Math.min(100, Math.round((trDone / trTotal) * 100)) : 0;
+      trBar.style.width = `${trPct}%`;
+      trBar.classList.toggle("done", trTotal > 0 && trDone >= trTotal);
+      trTxt.textContent = trTotal > 0 ? `${trDone}/${trTotal}` : "0/0";
+      trNote.textContent = st.tr_note || (dlDone < dlTotal ? "等待主图下载完成后开始" : "");
+    }
+
+    function startImportPolling() {
+      if (importPollTimer) clearInterval(importPollTimer);
+      const btn = document.getElementById("importBtn");
+      btn.disabled = true;
+      btn.textContent = "导入中...";
+      importPollTimer = setInterval(async () => {
+        const sRes = await fetch("/api/import-status");
+        const st = await sRes.json();
+        renderImportProgress(st);
+        if (!st.running) {
+          clearInterval(importPollTimer);
+          importPollTimer = null;
+          btn.disabled = false;
+          btn.textContent = "导入表格 (.xlsx/.csv)";
+          await loadAll();
+          showToast(st.message || "导入完成");
+        }
+      }, 600);
+    }
+
+    async function handleImportFile(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const btn = document.getElementById("importBtn");
+      btn.disabled = true;
+      btn.textContent = "上传中...";
+      renderImportProgress({
+        running: true,
+        dl_done: 0,
+        dl_total: 0,
+        dl_note: "正在上传并解析表格...",
+        tr_done: 0,
+        tr_total: 0,
+        tr_note: "等待主图下载完成后开始",
+      });
+      try {
+        const res = await fetch("/api/products/import", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/octet-stream",
+            "X-Filename": encodeURIComponent(file.name),
+          },
+          body: file,
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          showToast(data.error || "导入失败");
+          btn.disabled = false;
+          btn.textContent = "导入表格 (.xlsx/.csv)";
+          renderImportProgress({ running: false });
+          return;
+        }
+        startImportPolling();
+      } catch (e) {
+        showToast("导入请求异常");
+        btn.disabled = false;
+        btn.textContent = "导入表格 (.xlsx/.csv)";
+        renderImportProgress({ running: false });
+      } finally {
+        input.value = "";
+      }
+    }
+
+    async function deleteSelectedProducts() {
+      const asins = getOrderedSelectedAsins();
+      if (asins.length === 0) {
+        showToast("请先勾选至少一个 ASIN");
+        return;
+      }
+      if (!confirm(`确认物理删除选中的 ${asins.length} 个原始商品？\n\n将删除商品记录、本地主图、关联附图及导出表对应行；已匹配的 1688 同款与联系方式数据将保留，后续重新导入同 ASIN 可直接关联。`)) {
+        return;
+      }
+      const res = await fetch("/api/products/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ asins }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "删除失败");
+        return;
+      }
+      asins.forEach(a => selectedAsins.delete(a));
+      updateSelectedCount();
+      const box = document.getElementById("selectAllBox");
+      if (box) box.checked = false;
+      await loadAll();
+      showToast(`已物理删除 ${data.deleted} 个原始商品（同款数据已保留）`);
+    }
+
+    async function deleteSelectedMatches() {
+      const asins = getOrderedSelectedMatchAsins();
+      if (asins.length === 0) {
+        showToast("请先在同款列表勾选至少一个 ASIN");
+        return;
+      }
+      if (!confirm(`确认物理删除选中 ${asins.length} 个 ASIN 对应的全部 1688 同款与联系方式数据？`)) {
+        return;
+      }
+      const res = await fetch("/api/matches/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ asins }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "删除失败");
+        return;
+      }
+      asins.forEach(a => selectedMatchAsins.delete(a));
+      updateSelectedMatchCount();
+      const box = document.getElementById("selectAllMatchesBox");
+      if (box) box.checked = false;
+      await loadAll();
+      showToast(`已物理删除 ${data.deleted} 个 ASIN 的同款数据`);
+    }
+
+    function openRerunModal(asins) {
+      if (!asins || asins.length === 0) {
+        showToast("请先勾选至少一个 ASIN");
+        return;
+      }
+      pendingRerunAsins = asins;
+      document.getElementById("rerunLimit").value = "10";
+      document.getElementById("rerunMode").value = "auto";
+      const listEl = document.getElementById("rerunImagesList");
+      const hintEl = document.getElementById("rerunImagesHint");
+      if (asins.length === 1) {
+        const row = productRows.find(r => r.asin === asins[0]);
+        document.getElementById("rerunTargetInfo").textContent = `目标商品：${asins[0]} (${row ? (row.keyword_zh || row.clean_keyword || "") : ""})`;
+        document.getElementById("rerunQuery").value = row ? (row.keyword_zh || "") : "";
+        const imgCards = [];
+        if (row && (row.local_image_path || row.image_url)) {
+          const val = row.local_image_path || row.image_url;
+          const previewSrc = row.local_image_path ? `./${row.local_image_path}` : row.image_url;
+          imgCards.push(`
+            <label style="border:1px solid var(--primary);background:#eff6ff;border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:4px;cursor:pointer;font-size:12px;">
+              <div style="display:flex;align-items:center;gap:4px;font-weight:600;color:var(--primary);">
+                <input type="checkbox" value="${escapeHtml(val)}" checked />
+                <span>主图</span>
+              </div>
+              <img src="${escapeHtml(previewSrc)}" style="width:100%;height:76px;object-fit:contain;background:#fff;border-radius:4px;" />
+            </label>
+          `);
+        }
+        ((row && row.extra_images) || []).forEach(img => {
+          const tip = [img.ocr_status, img.ocr_text].filter(Boolean).join(" · ");
+          imgCards.push(`
+            <label title="${escapeHtml(tip)}" style="border:1px solid var(--border);background:#fff;border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:4px;cursor:pointer;font-size:12px;">
+              <div style="display:flex;align-items:center;gap:4px;">
+                <input type="checkbox" value="${escapeHtml(img.image_url)}" />
+                <span>附图 #${escapeHtml(img.seq)}</span>
+              </div>
+              <img src="${escapeHtml(img.image_url)}" loading="lazy" style="width:100%;height:76px;object-fit:contain;background:#fafafa;border-radius:4px;" />
+            </label>
+          `);
+        });
+        listEl.innerHTML = imgCards.length > 0 ? imgCards.join("") : `<div style="color:var(--muted);font-size:12px;">暂无可选图片</div>`;
+        hintEl.textContent = `共 ${imgCards.length} 张可选（主图默认勾选）`;
+      } else {
+        document.getElementById("rerunTargetInfo").textContent = `已选择 ${asins.length} 个 ASIN 批量获取同款`;
+        document.getElementById("rerunQuery").value = "";
+        listEl.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);font-size:12px;padding:4px 0;">批量模式下默认使用各自本地主图（如需挑选附图，请点击单行的「获取同款商品」）</div>`;
+        hintEl.textContent = "默认使用各商品主图";
+      }
+      onRerunModeChange();
+      document.getElementById("rerunModal").classList.remove("hidden");
+    }
+
+    function closeRerunModal() {
+      document.getElementById("rerunModal").classList.add("hidden");
+    }
+
+    function onRerunModeChange() {
+      const mode = document.getElementById("rerunMode").value;
+      document.getElementById("rerunQueryWrap").style.display = mode === "image" ? "none" : "flex";
+      document.getElementById("rerunImagesWrap").style.display = mode === "text" ? "none" : "flex";
+    }
+
+    function confirmRerun() {
+      const limit = Number(document.getElementById("rerunLimit").value || 10);
+      const mode = document.getElementById("rerunMode").value || "auto";
+      const custom_query = document.getElementById("rerunQuery").value.trim();
+      const save_query = document.getElementById("rerunSaveQuery").checked;
+      const images = Array.from(document.querySelectorAll("#rerunImagesList input[type='checkbox']:checked")).map(el => el.value);
+      if (pendingRerunAsins.length === 1 && mode === "image" && images.length === 0) {
+        showToast("按图搜请至少勾选一张图片");
+        return;
+      }
+      closeRerunModal();
+      triggerMatch(pendingRerunAsins, { limit, mode, custom_query, save_query, images });
+    }
+
+    function renderMatchProgress(st) {
+      const wrap = document.getElementById("matchProgressWrap");
+      const s1Bar = document.getElementById("matchStage1Bar");
+      const s1Txt = document.getElementById("matchStage1Text");
+      const s1Note = document.getElementById("matchStage1Note");
+      const s2Bar = document.getElementById("matchStage2Bar");
+      const s2Txt = document.getElementById("matchStage2Text");
+      const s2Note = document.getElementById("matchStage2Note");
+
+      const mTotal = Number(st.match_total ?? st.total ?? 0);
+      const mDone = Number(st.match_done ?? st.done ?? 0);
+      const dTotal = Number(st.detail_total ?? 0);
+      const dDone = Number(st.detail_done ?? 0);
+
+      if (!st.running) {
+        wrap.classList.add("hidden");
+        return;
+      }
+      wrap.classList.remove("hidden");
+
+      const mPct = mTotal > 0 ? Math.min(100, Math.round((mDone / mTotal) * 100)) : 0;
+      s1Bar.style.width = `${mPct}%`;
+      s1Bar.classList.toggle("done", mTotal > 0 && mDone >= mTotal);
+      s1Txt.textContent = mTotal > 0 ? `${mDone}/${mTotal}` : "0/0";
+      s1Note.textContent = st.match_note || (mTotal > 0 && mDone >= mTotal ? "已完成" : "");
+
+      const dPct = dTotal > 0 ? Math.min(100, Math.round((dDone / dTotal) * 100)) : 0;
+      s2Bar.style.width = `${dPct}%`;
+      s2Bar.classList.toggle("done", dTotal > 0 && dDone >= dTotal);
+      s2Txt.textContent = dTotal > 0 ? `${dDone}/${dTotal}` : "0/0";
+      s2Note.textContent = st.detail_note || (mDone < mTotal ? "等待查询同款完成后开始" : "");
+    }
+
+    function startMatchPolling() {
+      if (matchPollTimer) clearInterval(matchPollTimer);
+      const btn = document.getElementById("batchMatchBtn");
+      btn.disabled = true;
+      let lastKey = "";
+      matchPollTimer = setInterval(async () => {
+        const sRes = await fetch("/api/match-status");
+        const st = await sRes.json();
+        renderMatchProgress(st);
+        const curKey = `${st.match_done}/${st.detail_done}`;
+        if (curKey !== lastKey) {
+          lastKey = curKey;
+          await loadAll();
+        }
+        if (!st.running) {
+          clearInterval(matchPollTimer);
+          matchPollTimer = null;
+          btn.disabled = false;
+          await loadAll();
+          showToast(st.message || "匹配完成");
+          if (st.need_ak) {
+            openAkModal(st.message || "1688 AK 未配置或已失效，请先授权");
+          }
+        }
+      }, 1500);
+    }
+
+    async function triggerMatch(asins, opts = {}) {
+      if (!asins || asins.length === 0) {
+        showToast("请先勾选至少一个 ASIN");
+        return;
+      }
+      const limit = opts.limit || 10;
+      const mode = opts.mode || "auto";
+      const custom_query = opts.custom_query || "";
+      const save_query = Boolean(opts.save_query);
+      const images = opts.images || [];
+      const btn = document.getElementById("batchMatchBtn");
+      btn.disabled = true;
+      renderMatchProgress({
+        running: true,
+        match_total: asins.length * limit,
+        match_done: 0,
+        match_note: "正在提交任务...",
+        detail_total: 0,
+        detail_done: 0,
+        detail_note: "等待查询同款完成后开始",
+      });
+
+      const res = await fetch("/api/products/match", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ asins, limit, mode, custom_query, save_query, images })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "提交失败");
+        btn.disabled = false;
+        renderMatchProgress({ running: false, match_total: 0, detail_total: 0, message: "" });
+        if (data.need_ak) {
+          openAkModal(data.error || "尚未配置 1688 AK，请先授权或填入 AK");
+        }
+        return;
+      }
+
+      startMatchPolling();
+    }
+
+    function runSelectedMatch() {
+      openRerunModal(getOrderedSelectedAsins());
+    }
+
+    function runSingleMatch(asin) {
+      openRerunModal([asin]);
+    }
+
+    function renderProducts() {
+      document.getElementById("p-stat-total").textContent = productRows.length;
+      document.getElementById("p-stat-img").textContent = productRows.filter(r => r.local_image_path).length;
+      document.getElementById("p-stat-matched").textContent = productRows.filter(r => (r.matched_offers || []).length > 0).length;
+
+      const asinFilterList = parseAsinList(document.getElementById("pAsinSearch").value);
+      const kw = document.getElementById("pSearch").value.trim().toLowerCase();
+      const filtered = productRows.filter(r => {
+        if (asinFilterList.length > 0 && !asinFilterList.some(a => r.asin.toUpperCase().includes(a))) return false;
+        if (!kw) return true;
+        return `${r.clean_keyword} ${r.keyword_zh} ${r.title} ${r.brand} ${r.category_large} ${r.category_small}`.toLowerCase().includes(kw);
+      });
+
+      pPage = renderPaginationBar("pPagination", filtered.length, pPage, pPageSize, "p");
+      const paged = filtered.slice((pPage - 1) * pPageSize, pPage * pPageSize);
+
+      document.getElementById("p-tbody").innerHTML = paged.map(r => {
+        const imgSrc = r.local_image_path ? `./${r.local_image_path}` : (r.image_url || "");
+        const extraCount = (r.extra_images || []).length;
+        const offers = r.matched_offers || [];
+        const matchMethod = offers.length > 0 ? (offers[0].search_method || "") : "";
+        const methodBadge = matchMethod
+          ? `<span class="badge ${matchMethod.startsWith("图搜") ? "badge-green" : "badge-amber"}">${escapeHtml(matchMethod)}</span>`
+          : "";
+        const statusBadge = offers.length > 0
+          ? `<span class="badge badge-green">${escapeHtml(r.match_status)}</span>`
+          : (r.match_status && r.match_status !== "待找同款"
+              ? `<span class="badge badge-blue">${escapeHtml(r.match_status)}</span>`
+              : "");
+
+        const previewOffers = offers.slice(0, 2).map(m => `
+          <div class="match-mini-item">
+            <span title="${escapeHtml(m.supplier)}">¥${escapeHtml(m.price ?? "-")} · ${escapeHtml(m.supplier || "1688商品")}${m.phone ? ` · 📞${escapeHtml(m.phone)}` : ""}</span>
+            <a class="link" href="${escapeHtml(m.detail_url)}" target="_blank" style="flex-shrink:0;">详情 ↗</a>
+          </div>
+        `).join("");
+
+        return `
+          <tr>
+            <td>
+              <input type="checkbox" ${selectedAsins.has(r.asin) ? "checked" : ""}
+                onchange="toggleSelect('${escapeHtml(r.asin)}', this.checked)" />
+            </td>
+            <td>
+              ${imgSrc
+                ? `<a href="${escapeHtml(imgSrc)}" target="_blank"><img class="thumb" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(r.asin)}" /></a>`
+                : `<span class="badge badge-gray">无图</span>`}
+              <div style="color:var(--muted);font-size:11px;margin-top:4px;">${escapeHtml(r.local_image_path || "未下载")}</div>
+            </td>
+            <td>
+              <div style="font-weight:600;">${r.id ? `<span class="badge badge-gray" style="margin-right:6px;">#${escapeHtml(r.id)}</span>` : ""}${escapeHtml(r.asin)}</div>
+              <div class="link-row">
+                <a class="link" href="${escapeHtml(r.amazon_url)}" target="_blank">商品页 ↗</a>
+                ${r.image_url ? `<a class="link" href="${escapeHtml(r.image_url)}" target="_blank">主图原链 ↗</a>` : ""}
+                ${extraCount > 0 ? `<button class="btn btn-sm" onclick="openExtraImages('${escapeHtml(r.asin)}')">附图 (${extraCount})</button>` : ""}
+                ${offers.length > 0 ? `<button class="btn btn-sm" onclick="jumpToMatches(['${escapeHtml(r.asin)}'])">去同款列表 ↗</button>` : ""}
+              </div>
+            </td>
+            <td>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <input class="inline-input" type="text" value="${escapeHtml(r.clean_keyword || "")}"
+                  placeholder="英文关键词..."
+                  onblur="if (this.value !== '${escapeHtml(r.clean_keyword || "")}') updateProduct('${escapeHtml(r.asin)}', { clean_keyword: this.value })" />
+                <input class="inline-input" type="text" value="${escapeHtml(r.keyword_zh || "")}"
+                  placeholder="中文翻译关键词（1688搜索用）..."
+                  style="border-color:#bfdbfe;background:#f8fafc;"
+                  onblur="if (this.value !== '${escapeHtml(r.keyword_zh || "")}') updateProduct('${escapeHtml(r.asin)}', { keyword_zh: this.value })" />
+              </div>
+            </td>
+            <td>
+              <div class="title-cell" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div>
+              <div style="color:var(--muted);font-size:12px;margin-top:4px;">品牌: ${escapeHtml(r.brand || "-")}</div>
+            </td>
+            <td style="white-space:nowrap;">
+              <div>${r.price_usd ? `$${escapeHtml(r.price_usd)}` : "-"}</div>
+              <div style="color:var(--muted);font-size:12px;">${escapeHtml(r.dimensions || "-")}</div>
+            </td>
+            <td>
+              <div>
+                <span style="font-weight:500;">${escapeHtml(r.category_large || "-")}</span>
+                ${r.rank_large ? `<span style="color:var(--muted);font-size:12px;margin-left:4px;">#${escapeHtml(r.rank_large)}</span>` : ""}
+              </div>
+              <div style="margin-top:4px;font-size:13px;">
+                <span>${escapeHtml(r.category_small || "-")}</span>
+                ${r.rank_small ? `<span style="color:var(--muted);font-size:12px;margin-left:4px;">#${escapeHtml(r.rank_small)}</span>` : ""}
+              </div>
+            </td>
+            <td>
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+                ${statusBadge}
+                ${methodBadge}
+                ${offers.length > 0 ? `<button class="btn btn-sm" onclick="openMatchedOffers('${escapeHtml(r.asin)}')">同款列表 (${offers.length})</button>` : ""}
+                <button class="btn btn-sm" onclick="runSingleMatch('${escapeHtml(r.asin)}')">获取同款商品</button>
+              </div>
+              ${offers.length > 0 ? `<div class="match-mini">${previewOffers}</div>` : ""}
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderMatches() {
+      document.getElementById("m-stat-total").textContent = matchRows.length;
+      document.getElementById("m-stat-shops").textContent = new Set(matchRows.map(r => r.supplier).filter(Boolean)).size;
+      document.getElementById("m-stat-img").textContent = matchRows.filter(r => (r.search_method || "").startsWith("图搜")).length;
+      document.getElementById("m-stat-phone").textContent = matchRows.filter(r => r.virtual_phone || r.real_phone || r.phone).length;
+
+      const asinFilterList = parseAsinList(document.getElementById("mAsinSearch").value);
+      const kw = document.getElementById("mSearch").value.trim().toLowerCase();
+
+      const groups = getMatchGroups().filter(p => {
+        if (asinFilterList.length > 0 && !asinFilterList.some(a => p.asin.toUpperCase().includes(a))) return false;
+        const offers = p.matched_offers || [];
+        if (!kw) return true;
+        const parentMatch = `${p.keyword_zh} ${p.clean_keyword} ${p.title} ${p.brand}`.toLowerCase().includes(kw);
+        const childMatch = offers.some(m => `${m.title} ${m.supplier} ${m.search_method} ${m.phone || ""} ${m.contact_person || ""}`.toLowerCase().includes(kw));
+        return parentMatch || childMatch;
+      });
+
+      mPage = renderPaginationBar("mPagination", groups.length, mPage, mPageSize, "m");
+      const pagedGroups = groups.slice((mPage - 1) * mPageSize, mPage * mPageSize);
+
+      document.getElementById("m-tbody").innerHTML = pagedGroups.map(p => {
+        const offers = (p.matched_offers || []).filter(m => {
+          if (!kw) return true;
+          const parentMatch = `${p.keyword_zh} ${p.clean_keyword} ${p.title} ${p.brand}`.toLowerCase().includes(kw);
+          if (parentMatch) return true;
+          return `${m.title} ${m.supplier} ${m.search_method} ${m.phone || ""} ${m.contact_person || ""}`.toLowerCase().includes(kw);
+        });
+        const isOpen = expandedAsins.has(p.asin);
+        const imgSrc = p.local_image_path ? `./${p.local_image_path}` : (p.image_url || "");
+        const matchMethod = offers.length > 0 ? (offers[0].search_method || "") : "";
+        const methodBadge = matchMethod
+          ? `<span class="badge ${matchMethod.startsWith("图搜") ? "badge-green" : "badge-amber"}" style="margin-left:6px;">${escapeHtml(matchMethod)}</span>`
+          : "";
+        const phoneCount = offers.filter(m => m.virtual_phone || m.real_phone || m.phone).length;
+        const mChecked = selectedMatchAsins.has(p.asin) ? "checked" : "";
+
+        const parentRow = `
+          <tr style="cursor:pointer;background:${isOpen ? "#f0f7ff" : "#fff"};" onclick="toggleExpand('${escapeHtml(p.asin)}')">
+            <td onclick="event.stopPropagation()">
+              <input type="checkbox" ${mChecked} onchange="toggleSelectMatch('${escapeHtml(p.asin)}', this.checked)" />
+            </td>
+            <td style="text-align:center;font-weight:700;color:var(--primary);user-select:none;">
+              ${isOpen ? "▼" : "▶"}
+            </td>
+            <td>
+              ${imgSrc ? `<img class="thumb" style="width:52px;height:52px;" src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.asin)}" />` : "-"}
+            </td>
+            <td>
+              <div style="font-weight:600;">${p.id ? `<span class="badge badge-gray" style="margin-right:6px;">#${escapeHtml(p.id)}</span>` : ""}${escapeHtml(p.asin)}</div>
+              <div style="color:var(--primary);font-size:12px;margin-top:2px;">${escapeHtml(p.keyword_zh || p.clean_keyword || "")}</div>
+            </td>
+            <td>
+              <div class="title-cell" title="${escapeHtml(p.title)}">${escapeHtml(p.title)}</div>
+              <div style="color:var(--muted);font-size:12px;margin-top:2px;">${escapeHtml(p.category_small || "-")}</div>
+            </td>
+            <td>
+              <div>
+                <span class="badge ${offers.length > 0 ? "badge-green" : "badge-gray"}">
+                  ${offers.length > 0 ? `已匹配 ${offers.length} 家不同店铺` : "暂无匹配"}
+                </span>
+                ${methodBadge}
+              </div>
+              <div style="color:var(--muted);font-size:12px;margin-top:4px;">已拿到电话：${phoneCount}/${offers.length}</div>
+            </td>
+            <td onclick="event.stopPropagation()">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                ${offers.length > 0 ? `<button class="btn btn-sm btn-primary" style="white-space:nowrap;" onclick="fetchAsinContacts('${escapeHtml(p.asin)}', 'factory')">批量获取虚拟号</button>` : ""}
+                ${offers.length > 0 ? `<button class="btn btn-sm" style="white-space:nowrap;" onclick="fetchAsinContacts('${escapeHtml(p.asin)}', 'company')">批量获取实号</button>` : ""}
+              </div>
+            </td>
+          </tr>
+        `;
+
+        if (!isOpen) return parentRow;
+
+        const childContent = offers.length > 0
+          ? `
+            <table style="width:100%;min-width:1120px;background:#fff;border:1px solid var(--border);border-radius:8px;">
+              <thead>
+                <tr>
+                  <th>1688 主图</th>
+                  <th>1688 商品标题 &amp; 链接</th>
+                  <th>价格 / 起批量</th>
+                  <th>销量 / 严选</th>
+                  <th>供应商名称</th>
+                  <th>联系人 &amp; 联系电话</th>
+                  <th>跟进状态 &amp; 备注</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${offers.map(r => {
+                  const phoneLines = formatPhoneLines(r);
+                  const followVal = r.follow_status || "待跟进";
+                  const realPhoneVal = r.real_phone || (!r.virtual_phone && r.phone ? r.phone : "");
+                  const realPhonePlaceholder = (r.contact_status && r.contact_status !== "已获取电话") ? r.contact_status : "补录/修改实号...";
+                  return `
+                    <tr>
+                      <td>
+                        ${r.image_url ? `<img class="thumb" style="width:50px;height:50px;" src="${escapeHtml(r.image_url)}" alt="1688图" loading="lazy" referrerpolicy="no-referrer" />` : "-"}
+                      </td>
+                      <td>
+                        <div class="title-cell" title="${escapeHtml(r.title)}">${escapeHtml(r.title)}</div>
+                        <a class="link" href="${escapeHtml(r.detail_url)}" target="_blank">打开 1688 链接 ↗</a>
+                      </td>
+                      <td style="white-space:nowrap;">
+                        <div style="color:#b91c1c;font-weight:600;">¥${escapeHtml(r.price ?? "-")}</div>
+                        <div style="color:var(--muted);font-size:12px;">${escapeHtml(r.quantity_begin ?? 1)} 件起批</div>
+                      </td>
+                      <td style="white-space:nowrap;">
+                        <div>销量 ${escapeHtml(r.sold_count ?? 0)}</div>
+                        <div style="color:var(--muted);font-size:12px;">严选 ${escapeHtml(r.yx_index ?? "-")}</div>
+                      </td>
+                      <td>
+                        <div>${escapeHtml(r.supplier || "-")}</div>
+                        <div style="color:var(--muted);font-size:11px;margin-top:2px;">
+                          ${[r.supplier_location, r.supplier_level, r.supplier_monthly_orders ? `月订单${r.supplier_monthly_orders}` : ""].filter(Boolean).join(" · ")}
+                        </div>
+                        <div class="link-row">
+                          ${r.shop_origin ? `<a class="link" href="${escapeHtml(r.shop_origin)}" target="_blank">店铺主页 ↗</a>` : ""}
+                          ${(r.supplier_factory_url || r.factory_url) ? `<a class="link" href="${escapeHtml(r.supplier_factory_url || r.factory_url)}" target="_blank">工厂档案 ↗</a>` : ""}
+                        </div>
+                      </td>
+                      <td style="white-space:nowrap;">
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                          ${r.virtual_phone
+                            ? `<div><span class="phone-text">${escapeHtml(r.virtual_phone)}</span> <span class="badge badge-amber">虚拟号${r.virtual_expires_at ? `，截止 ${escapeHtml(r.virtual_expires_at)}` : ""}</span></div>`
+                            : ""}
+                          <div style="display:flex;align-items:center;gap:6px;">
+                            <input class="inline-input" style="width:136px;padding:3px 6px;font-size:13px;font-weight:400;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;" type="text"
+                              value="${escapeHtml(realPhoneVal)}"
+                              placeholder="${escapeHtml(realPhonePlaceholder)}"
+                              onblur="if (this.value !== this.defaultValue) { this.defaultValue = this.value; updateContact('${escapeHtml(r.product_id)}', { real_phone: this.value, offer_url: '${escapeHtml(r.detail_url)}', shop_name: '${escapeHtml(r.supplier)}', product_title: '${escapeHtml(r.title)}' }); }" />
+                            <input class="inline-input" style="width:88px;padding:3px 6px;font-size:13px;font-weight:400;" type="text"
+                              value="${escapeHtml(r.contact_person || "")}"
+                              placeholder="联系人..."
+                              onblur="if (this.value !== this.defaultValue) { this.defaultValue = this.value; updateContact('${escapeHtml(r.product_id)}', { contact_person: this.value, offer_url: '${escapeHtml(r.detail_url)}', shop_name: '${escapeHtml(r.supplier)}', product_title: '${escapeHtml(r.title)}' }); }" />
+                            <span class="badge badge-green">实号</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display:flex;flex-direction:column;gap:4px;width:210px;">
+                          <select class="inline-select" style="width:100%;padding:3px 6px;font-size:12px;"
+                            onchange="updateContact('${escapeHtml(r.product_id)}', { follow_status: this.value, offer_url: '${escapeHtml(r.detail_url)}', shop_name: '${escapeHtml(r.supplier)}', product_title: '${escapeHtml(r.title)}' })">
+                            ${["待跟进", "已拨打", "已加微信", "暂未接通", "无效/不合作"].map(opt =>
+                              `<option value="${opt}" ${followVal === opt ? "selected" : ""}>${opt}</option>`
+                            ).join("")}
+                          </select>
+                          <textarea class="inline-input" rows="3"
+                            style="width:100%;min-height:64px;padding:5px 7px;font-size:12px;line-height:1.45;font-family:inherit;resize:vertical;"
+                            placeholder="备注（支持多行）..."
+                            onblur="if (this.value !== this.defaultValue) { this.defaultValue = this.value; updateContact('${escapeHtml(r.product_id)}', { follow_note: this.value, offer_url: '${escapeHtml(r.detail_url)}', shop_name: '${escapeHtml(r.supplier)}', product_title: '${escapeHtml(r.title)}' }); }">${escapeHtml(r.follow_note || "")}</textarea>
+                        </div>
+                      </td>
+                      <td>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                          <button class="btn btn-sm btn-primary" style="white-space:nowrap;" onclick="fetchSingleContact('${escapeHtml(r.detail_url)}', '${escapeHtml(r.supplier || "")}', '${escapeHtml(r.supplier_factory_url || r.factory_url || "")}', 'factory')">获取虚拟号</button>
+                          <button class="btn btn-sm" style="white-space:nowrap;" onclick="fetchSingleContact('${escapeHtml(r.detail_url)}', '${escapeHtml(r.supplier || "")}', '${escapeHtml(r.supplier_factory_url || r.factory_url || "")}', 'company')">获取实号</button>
+                          <button class="btn btn-sm" style="white-space:nowrap;" onclick="startWangWangChat('${escapeHtml(r.detail_url)}')">发起旺旺聊天</button>
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join("")}
+              </tbody>
+            </table>
+          `
+          : `<div style="color:var(--muted);padding:10px 0;">该 ASIN 暂无匹配到的 1688 卖家，可回商品库点击「获取同款商品」手动输入关键词尝试。</div>`;
+
+        const childRow = `
+          <tr>
+            <td colspan="7" style="background:#f8fafc;padding:12px 16px 16px 48px;">
+              ${childContent}
+            </td>
+          </tr>
+        `;
+        return parentRow + childRow;
+      }).join("");
+    }
+
+    async function refreshConfigState() {
+      try {
+        const res = await fetch("/api/config");
+        const cfg = await res.json();
+        configuredGreeting = cfg.wangwang_greeting || "老板你好，想长期拿货，方便留个电话直接沟通吗";
+        const akBtn = document.getElementById("akConfigBtn");
+        if (akBtn) {
+          akBtn.textContent = cfg.has_ak ? `1688 AK (${cfg.ak_masked})` : "1688 AK (未配置)";
+          akBtn.style.borderColor = cfg.has_ak ? "#86efac" : "#fcd34d";
+        }
+        const banner = document.getElementById("akStatusBanner");
+        if (banner) {
+          banner.innerHTML = cfg.has_ak
+            ? `<span style="color:#166534;font-weight:600;">当前已配置 AK：${escapeHtml(cfg.ak_masked)}</span>（保存于本地 <code>config.json</code>）`
+            : `<span style="color:#b45309;font-weight:600;">尚未配置 1688 AK</span>：请点击下方「一键浏览器授权获取 AK」或手动粘贴保存。`;
+        }
+        const greetingInput = document.getElementById("akGreetingInput");
+        if (greetingInput && document.activeElement !== greetingInput) {
+          greetingInput.value = configuredGreeting;
+        }
+        return cfg;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function openAkModal(customHint = "") {
+      document.getElementById("akManualInput").value = "";
+      document.getElementById("akAuthStatusText").classList.add("hidden");
+      document.getElementById("akModal").classList.remove("hidden");
+      await refreshConfigState();
+      if (customHint) {
+        const banner = document.getElementById("akStatusBanner");
+        banner.innerHTML = `<span style="color:#b45309;font-weight:600;">${escapeHtml(customHint)}</span>`;
+      }
+    }
+
+    function closeAkModal() {
+      document.getElementById("akModal").classList.add("hidden");
+    }
+
+    async function saveAkConfig() {
+      const akVal = document.getElementById("akManualInput").value.trim();
+      const greetingVal = document.getElementById("akGreetingInput").value.trim();
+      const payload = { wangwang_greeting: greetingVal };
+      if (akVal) payload.ak = akVal;
+      const res = await fetch("/api/config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "保存失败");
+        return;
+      }
+      showToast("配置已保存");
+      await refreshConfigState();
+      closeAkModal();
+    }
+
+    async function startBrowserAkAuth() {
+      const btn = document.getElementById("akBrowserAuthBtn");
+      const statusEl = document.getElementById("akAuthStatusText");
+      btn.disabled = true;
+      statusEl.textContent = "正在启动浏览器前往 1688 AK 授权页，请在浏览器完成确认...";
+      statusEl.classList.remove("hidden");
+      const res = await fetch("/api/ak/authorize", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "启动授权失败");
+        btn.disabled = false;
+        return;
+      }
+      if (akPollTimer) clearInterval(akPollTimer);
+      akPollTimer = setInterval(async () => {
+        const cfg = await refreshConfigState();
+        const st = cfg && cfg.ak_auth ? cfg.ak_auth : null;
+        if (!st) return;
+        statusEl.textContent = st.message || "";
+        if (!st.running) {
+          clearInterval(akPollTimer);
+          akPollTimer = null;
+          btn.disabled = false;
+          showToast(st.message || (st.success ? "AK 授权成功" : "AK 授权未完成"));
+          if (st.success) {
+            closeAkModal();
+          }
+        }
+      }, 1200);
+    }
+
+    async function triggerBrowserLogin() {
+      const btn = document.getElementById("browserLoginBtn");
+      btn.disabled = true;
+      const res = await fetch("/api/browser/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || "启动扫码登录失败");
+        btn.disabled = false;
+        return;
+      }
+      showToast("已打开 Chrome，请使用手机扫码登录 1688...");
+      if (loginPollTimer) clearInterval(loginPollTimer);
+      loginPollTimer = setInterval(async () => {
+        const cfg = await refreshConfigState();
+        const st = cfg && cfg.login_state ? cfg.login_state : null;
+        if (!st) return;
+        if (!st.running) {
+          clearInterval(loginPollTimer);
+          loginPollTimer = null;
+          btn.disabled = false;
+          showToast(st.message || "登录流程已结束");
+        }
+      }, 1500);
+    }
+
+    async function shutdownServer() {
+      if (!confirm("确认停止本地工作台服务吗？")) return;
+      try {
+        await fetch("/api/shutdown", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" });
+        showToast("工作台服务已安全停止，可关闭此页面");
+      } catch (e) {
+        showToast("服务已关闭");
+      }
+    }
+
+    restoreUiState();
+    loadAll();
+    refreshConfigState();
+    fetch("/api/import-status").then(r => r.json()).then(st => {
+      if (st && st.running) {
+        renderImportProgress(st);
+        startImportPolling();
+      }
+    }).catch(() => {});
+    fetch("/api/match-status").then(r => r.json()).then(st => {
+      if (st && st.running) {
+        renderMatchProgress(st);
+        startMatchPolling();
+      }
+    }).catch(() => {});
+    fetch("/api/contact-status").then(r => r.json()).then(st => {
+      if (st && st.running) {
+        renderContactProgress(st);
+        startContactPolling();
+      }
+    }).catch(() => {});
+  </script>
+</body>
+</html>
